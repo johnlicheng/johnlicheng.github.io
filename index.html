@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="九年级历史知识PK对战 - 同屏双人对战，巩固统编版世界历史（九年级上册）知识" />
+  <title>历史PK对战 · 九年级世界历史上册</title>
+  <style>
+:root {
+  --primary: #ff6b4a;
+  --primary-dark: #e8552f;
+  --green: #2e9e5b;
+  --green-light: #dff4e7;
+  --red: #e04b4b;
+  --red-light: #fdeaea;
+  --blue: #3a7bd5;
+  --blue-light: #e7f0fc;
+  --ink: #2b2b31;
+  --muted: #7a7a85;
+  --line: #ececf0;
+  --bg: #f5f3ef;
+  --card: #ffffff;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app { min-height: 100vh; }
+
+/* 通用视图 */
+.view { padding: 24px; max-width: 1000px; margin: 0 auto; }
+.hidden { display: none !important; }
+
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 28px;
+}
+
+/* ============ 设置页 ============ */
+.logo { text-align: center; margin-bottom: 22px; }
+.logo-icon {
+  width: 64px; height: 64px; margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; border-radius: 18px;
+  background: linear-gradient(135deg, #ffd86b, #ff8a3d);
+  box-shadow: 0 6px 16px rgba(255, 138, 61, 0.4);
+}
+.logo h1 { font-size: 26px; letter-spacing: 1px; }
+.subtitle { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+.players-row { display: flex; gap: 14px; align-items: flex-end; margin: 20px 0; }
+.player-input { flex: 1; }
+.player-input label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+.player-input input {
+  width: 100%; padding: 12px 14px; font-size: 16px;
+  border: 2px solid var(--line); border-radius: 12px; outline: none;
+  transition: border-color .15s;
+}
+.pA input:focus { border-color: var(--primary); }
+.pB input:focus { border-color: var(--blue); }
+.vs-badge {
+  flex: none; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 18px; color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--blue));
+  border-radius: 50%; transform: translateY(-4px);
+}
+
+.field { margin: 18px 0; }
+.field-label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.seg { display: flex; gap: 10px; flex-wrap: wrap; }
+.seg-chip {
+  padding: 9px 18px; border-radius: 10px; cursor: pointer;
+  background: var(--bg); border: 2px solid var(--line);
+  font-weight: 700; font-size: 15px; user-select: none; transition: all .15s;
+}
+.seg-chip:hover { border-color: var(--primary); }
+.seg-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.unit-chip {
+  border: 2px solid var(--line); background: #fff; border-radius: 12px;
+  padding: 11px 12px; cursor: pointer; user-select: none; transition: all .15s;
+  font-size: 13.5px; line-height: 1.35;
+}
+.unit-chip .u-name { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.unit-chip .u-check { color: transparent; }
+.unit-chip .u-count { color: var(--muted); font-size: 12px; margin-left: auto; white-space: nowrap; }
+.unit-chip.active { border-color: var(--green); background: var(--green-light); }
+.unit-chip.active .u-check { color: var(--green); }
+.hint { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+.link-btn {
+  background: none; border: none; color: var(--blue); cursor: pointer;
+  font-size: 13px; padding: 0; margin: 2px 0 10px;
+}
+.btn-primary {
+  display: block; width: 100%; padding: 14px; border: none; border-radius: 14px;
+  background: var(--primary); color: #fff; font-size: 18px; font-weight: 800;
+  cursor: pointer; transition: transform .1s, opacity .15s; letter-spacing: 2px;
+}
+.btn-primary:hover { opacity: .92; }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:disabled { background: #d8d8de; cursor: not-allowed; }
+.btn-primary.big { padding: 15px; font-size: 19px; box-shadow: 0 6px 16px rgba(255, 107, 74, .4); }
+
+.btn-secondary {
+  padding: 14px; border: 2px solid var(--line); border-radius: 14px;
+  background: #fff; color: var(--ink); font-size: 17px; font-weight: 700; cursor: pointer;
+}
+
+.tip { font-size: 13px; color: var(--muted); text-align: center; margin: 14px 0 4px; line-height: 1.6; }
+
+.bank-panel { margin-top: 8px; padding: 16px; background: var(--bg); border-radius: 12px; font-size: 13.5px; color: var(--muted); line-height: 1.7; }
+.bank-list { margin-top: 10px; max-height: 260px; overflow: auto; }
+.bank-item { padding: 8px 4px; border-bottom: 1px dashed var(--line); color: var(--ink); }
+.bank-item .u { color: var(--muted); font-size: 12px; }
+
+/* ============ 对战页 ============ */
+#view-battle { max-width: 1200px; padding: 14px; display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+.battle-bar {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border-radius: 14px; padding: 12px 16px;
+  box-shadow: var(--shadow); margin-bottom: 12px;
+}
+.abort-btn { background: none; border: 1px solid var(--line); color: var(--muted); padding: 7px 12px; border-radius: 10px; cursor: pointer; font-size: 13px; }
+.abort-btn:hover { color: var(--red); border-color: var(--red); }
+.battle-hint { flex: 1; text-align: center; font-size: 14px; font-weight: 700; color: var(--ink); }
+
+.battle-panels { display: flex; flex: 1; gap: 12px; min-height: 0; }
+
+.player-panel {
+  flex: 1; background: var(--card); border-radius: 16px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; overflow: hidden;
+  border-top: 5px solid var(--primary);
+}
+.player-panel.pb { border-top-color: var(--blue); }
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; background: #faf8f5;
+}
+.player-panel.pb .panel-head { background: #f6f9fd; }
+.player-name { font-size: 18px; font-weight: 800; }
+.pa .player-name { color: var(--primary-dark); }
+.pb .player-name { color: var(--blue); }
+.panel-stats { display: flex; gap: 10px; }
+.stat { font-size: 13px; background: #fff; border-radius: 20px; padding: 4px 12px; border: 1px solid var(--line); }
+.stat.score { color: var(--primary-dark); font-weight: 700; }
+.pb .stat.score { color: var(--blue); }
+.stat .num { font-size: 16px; font-weight: 800; }
+
+.panel-progress { background: var(--bg); }
+.panel-bar-track { height: 6px; background: var(--line); }
+.panel-bar { height: 100%; width: 0%; background: var(--primary); transition: width .4s; }
+.pb .panel-bar { background: var(--blue); }
+.panel-progress-label { text-align: center; padding: 4px 10px 6px; }
+.panel-progress-label .q-progress { font-weight: 800; font-size: 13px; color: var(--muted); }
+.pa .panel-progress-label .q-progress { color: var(--primary-dark); }
+.pb .panel-progress-label .q-progress { color: var(--blue); }
+
+.panel-footer {
+  padding: 12px 14px; border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.panel-footer .next-btn { width: 100%; }
+.done-label { text-align: center; color: var(--green); font-weight: 800; font-size: 14px; }
+
+.panel-body { flex: 1; display: flex; flex-direction: column; padding: 14px; overflow: auto; min-height: 0; }
+.q-text { font-size: 17px; font-weight: 700; line-height: 1.55; margin-bottom: 14px; }
+
+.options { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px;
+  background: #fff; cursor: pointer; transition: all .15s; text-align: left; font-size: 14.5px; line-height: 1.45;
+}
+.opt:hover:not(.locked) { border-color: var(--primary); }
+.opt .key {
+  flex: none; width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); font-weight: 800; font-size: 14px;
+}
+.opt.selected { border-color: var(--primary); background: #fff3ee; }
+.pb .opt.selected { border-color: var(--blue); background: #eef4ff; }
+.opt.selected .key { background: var(--primary); color: #fff; }
+.pb .opt.selected .key { background: var(--blue); color: #fff; }
+.opt.correct { border-color: var(--green); background: var(--green-light); }
+.opt.correct .key { background: var(--green); color: #fff; }
+.opt.wrong { border-color: var(--red); background: var(--red-light); }
+.opt.wrong .key { background: var(--red); color: #fff; }
+.opt.locked, .opt.done { cursor: default; pointer-events: none; }
+
+.answer-box { margin-top: 12px; font-size: 13.5px; line-height: 1.7; padding: 10px; border-radius: 10px; display: none; }
+.answer-box.show { display: block; }
+.answer-box .res-line { font-weight: 800; margin-bottom: 6px; }
+.answer-box .ok { color: var(--green); }
+.answer-box .no { color: var(--red); }
+.answer-box .src { color: var(--primary-dark); font-weight: 700; }
+.answer-box .expl { color: var(--muted); }
+
+.center-divider {
+  flex: none; width: 84px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.cd-score { display: flex; flex-direction: column; align-items: center; background: #fff; padding: 8px 6px; border-radius: 12px; box-shadow: var(--shadow); }
+.cd-name { font-weight: 800; color: var(--primary-dark); }
+.cd-name.b { color: var(--blue); }
+.cd-vs { font-size: 13px; color: var(--muted); font-weight: 700; }
+
+/* ============ 结算页 ============ */
+.result-card { padding: 24px; }
+.result-title { text-align: center; font-size: 24px; font-weight: 800; margin-bottom: 18px; }
+.result-title .winner { color: var(--primary); }
+.result-title .draw { color: var(--blue); }
+
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 6px; }
+.sum-card { padding: 14px; border-radius: 14px; background: var(--bg); text-align: center; }
+.sum-card.pa { border-top: 4px solid var(--primary); }
+.sum-card.pb { border-top: 4px solid var(--blue); }
+.sum-card .sum-name { font-weight: 800; margin-bottom: 8px; }
+.sum-card .big-num { font-size: 30px; font-weight: 800; }
+.sum-card.pa .big-num { color: var(--primary-dark); }
+.sum-card.pb .big-num { color: var(--blue); }
+.sum-card .sum-label { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.rate-row { display: flex; gap: 6px; margin-top: 8px; }
+.rate-row .r { flex: 1; }
+
+.block { margin-top: 22px; }
+.block-title { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+
+.chart-wrap { background: var(--bg); border-radius: 14px; padding: 10px; }
+.chart-wrap svg { width: 100%; height: auto; display: block; }
+.legend { display: flex; gap: 18px; justify-content: center; margin-top: 8px; font-size: 13px; }
+.legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; }
+.dot.a { background: var(--primary); }
+.dot.b { background: var(--blue); }
+
+.knowledge { display: flex; flex-direction: column; gap: 10px; }
+.unit-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px; background: var(--bg); border-radius: 12px; }
+.unit-row .u-name { font-weight: 700; font-size: 14px; }
+.k-bar { grid-column: 1 / -1; height: 8px; background: #e6e6ec; border-radius: 6px; position: relative; }
+.k-bar i { position: absolute; inset: 0 auto 0 0; border-radius: 6px; }
+.k-bar .a { background: var(--primary); }
+.k-bar .b { background: var(--blue); }
+.weak { background: var(--red-light); border: 1px solid #f6cdcd; }
+.weak-tag { font-size: 12px; color: var(--red); font-weight: 700; }
+
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
+.detail-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
+.detail-table th, .detail-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.detail-table th { background: var(--bg); font-weight: 700; }
+.res-ok { color: var(--green); font-weight: 700; }
+.res-no { color: var(--red); font-weight: 700; }
+
+.detail-per-player { display: flex; flex-direction: column; gap: 18px; }
+.detail-player { }
+.detail-name { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+.detail-name.a { color: var(--primary-dark); }
+.detail-name.b { color: var(--blue); }
+.detail-player .table-wrap { margin-top: 8px; }
+
+.result-actions { display: flex; gap: 14px; margin-top: 24px; }
+.result-actions .btn-primary { flex: 1; }
+.result-actions .btn-secondary { flex: 1; }
+
+/* ============ 响应式 ============ */
+@media (max-width: 720px) {
+  .view { padding: 14px; }
+  .card { padding: 18px; }
+  .logo h1 { font-size: 21px; }
+  #view-battle { padding: 8px; gap: 8px; }
+  .battle-bar { padding: 8px 10px; gap: 8px; }
+  .battle-hint { font-size: 12.5px; }
+  .center-divider { width: 34px; }
+  .cd-name { font-size: 12px; }
+  .q-text { font-size: 15px; }
+  .opt { padding: 10px 11px; font-size: 13.5px; }
+  .player-name { font-size: 15px; }
+  .stat { padding: 3px 8px; font-size: 11px; }
+  .result-actions { flex-direction: column; }
+}
+
+/* 横屏窄设备（手机横屏对战） */
+@media (orientation: landscape) and (max-width: 900px) {
+  #view-battle { padding: 4px; }
+  .battle-bar { padding: 6px 8px; }
+  .q-text { font-size: 14px; }
+  .opt { padding: 7px 9px; font-size: 12.5px; gap: 6px; }
+  .opt .key { width: 22px; height: 22px; }
+  .answer-box { font-size: 12px; margin-top: 6px; }
+}
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ============ 设置视图 ============ -->
+    <section id="view-setup" class="view">
+      <div class="card setup-card">
+        <div class="logo">
+          <div class="logo-icon">⚔</div>
+          <h1>历史知识 PK 对战</h1>
+          <p class="subtitle">统编版《世界历史》九年级上册 · 双人同屏对决</p>
+        </div>
+
+        <!-- 玩家昵称 -->
+        <div class="players-row">
+          <div class="player-input pA">
+            <label for="nameA">玩家&nbsp;A</label>
+            <input id="nameA" type="text" maxlength="8" placeholder="A同学" />
+          </div>
+          <div class="vs-badge">VS</div>
+          <div class="player-input pB">
+            <label for="nameB">玩家&nbsp;B</label>
+            <input id="nameB" type="text" maxlength="8" placeholder="B同学" />
+          </div>
+        </div>
+
+        <!-- 题数选择 -->
+        <div class="field">
+          <label class="field-label">本轮题数（10 – 20）</label>
+          <div id="count-options" class="seg"></div>
+        </div>
+
+        <!-- 章节范围 -->
+        <div class="field">
+          <label class="field-label">章节范围（多选，按所选单元随机抽题）</label>
+          <button id="toggle-all-units" class="link-btn" type="button">
+            <span id="toggle-all-text">✔ 全选所有单元</span>
+          </button>
+          <div id="unit-options" class="unit-grid"></div>
+          <p id="bank-info" class="hint"></p>
+        </div>
+
+        <button id="btn-start" class="btn-primary big" type="button">开始对战</button>
+        <p class="tip">对战规则：左右两边各自独立作答，答对每题 +10 分，答完点各自下方的『下一题』；双方都完成即自动出结算，节奏互不影响。</p>
+
+        <button id="btn-bank" class="link-btn" type="button">查看题库与说明 ▾</button>
+        <div id="bank-panel" class="bank-panel hidden">
+          <p>题库依据统编版（最新）《世界历史》九年级上册主要章节要点编制，共
+            <span id="bank-count"></span> 道选择题，按单元分类。每题附考点出处与解析，适合课后自测与 PK。
+          </p>
+          <div id="bank-list" class="bank-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 对战视图 ============ -->
+    <section id="view-battle" class="view hidden">
+      <div class="battle-bar">
+        <button id="btn-abort" class="abort-btn" title="退出本局">✕ 退出</button>
+        <div class="battle-hint">左右两边各自独立作答，答完点各自下方的『下一题』</div>
+      </div>
+
+      <div id="battle-panels" class="battle-panels">
+        <!-- 玩家A 面板 -->
+        <div id="panel-0" class="player-panel pa">
+          <div class="panel-head">
+            <div class="player-name">玩家 A</div>
+            <div class="panel-stats">
+              <span class="stat score"><span class="num" id="score-0">0</span>分</span>
+              <span class="stat correct"><span class="num" id="correct-0">0</span>对</span>
+            </div>
+          </div>
+          <div class="panel-progress">
+            <div class="panel-bar-track"><div id="bar-0" class="panel-bar"></div></div>
+            <div class="panel-progress-label"><span id="prog-0" class="q-progress">第 1 / 10 题</span></div>
+          </div>
+          <div class="panel-body">
+            <div class="q-text" id="question-0"></div>
+            <div id="options-0" class="options"></div>
+            <div id="answer-0" class="answer-box"></div>
+          </div>
+          <div class="panel-footer">
+            <button id="next-0" class="btn-primary next-btn" type="button" disabled>下一题</button>
+            <div id="done-0" class="done-label hidden">✅ 已完成</div>
+          </div>
+        </div>
+        <!-- 中央分隔条 -->
+        <div class="center-divider">
+          <div class="cd-score">
+            <span class="cd-name" id="cdNameA">A</span>
+            <span class="cd-vs">VS</span>
+            <span class="cd-name" id="cdNameB">B</span>
+          </div>
+          <div class="cd-delay"></div>
+        </div>
+        <!-- 玩家B 面板 -->
+        <div id="panel-1" class="player-panel pb">
+          <div class="panel-head">
+            <div class="player-name">玩家 B</div>
+            <div class="panel-stats">
+              <span class="stat score"><span class="num" id="score-1">0</span>分</span>
+              <span class="stat correct"><span class="num" id="correct-1">0</span>对</span>
+            </div>
+          </div>
+          <div class="panel-progress">
+            <div class="panel-bar-track"><div id="bar-1" class="panel-bar"></div></div>
+            <div class="panel-progress-label"><span id="prog-1" class="q-progress">第 1 / 10 题</span></div>
+          </div>
+          <div class="panel-body">
+            <div class="q-text" id="question-1"></div>
+            <div id="options-1" class="options"></div>
+            <div id="answer-1" class="answer-box"></div>
+          </div>
+          <div class="panel-footer">
+            <button id="next-1" class="btn-primary next-btn" type="button" disabled>下一题</button>
+            <div id="done-1" class="done-label hidden">✅ 已完成</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 结算视图 ============ -->
+    <section id="view-result" class="view hidden">
+      <div class="card result-card">
+        <div id="result-title" class="result-title"></div>
+
+        <!-- 汇总卡片 -->
+        <div id="summary" class="summary"></div>
+
+        <!-- 得分曲线 SVG -->
+        <div class="block">
+          <h3 class="block-title">📈 双方各自累计得分曲线</h3>
+          <div id="chart-wrap" class="chart-wrap">
+            <svg id="chart" viewBox="0 0 600 260" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+          <div class="legend" id="chart-legend"></div>
+        </div>
+
+        <!-- 知识点分析 -->
+        <div class="block">
+          <h3 class="block-title">📊 知识点掌握分析</h3>
+          <div id="knowledge" class="knowledge"></div>
+        </div>
+
+        <!-- 逐题明细（按玩家分别列出） -->
+        <div class="block">
+          <h3 class="block-title">📋 逐题明细</h3>
+          <div id="detail" class="detail-per-player"></div>
+        </div>
+
+        <div class="result-actions">
+          <button id="btn-again" class="btn-primary big" type="button">🔁 再来一局</button>
+          <button id="btn-reset" class="btn-secondary big" type="button">⚙ 重新设置</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+// 九年级历史上册《世界历史》题库 —— 依据统编版（部编）最新教材要点编制
+// 每题为标准化选择题，含单元/课节出处与简明考点解析。
+window.QUESTION_BANK = [
+  // ================= 第一单元 古代亚非文明 =================
+  {
+    id: 1, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '古埃及文明被认为是古代世界最灿烂的文明之一，它的产生与下列哪条河流有密切关系？',
+    options: ['A. 黄河', 'B. 尼罗河', 'C. 两河流域（幼发拉底河与底格里斯河）', 'D. 印度河'],
+    answer: 1,
+    explanation: '古埃及文明诞生于尼罗河流域，尼罗河的定期泛滥带来肥沃土壤，孕育了古埃及文明。荷马说过尼罗河是古埃及的"母亲河"。（易错：两河流域对应巴比伦，别混淆！）'
+  },
+  {
+    id: 2, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '金字塔是古埃及文明的象征，关于金字塔的说法正确的是：',
+    options: ['A. 金字塔是古埃及法老的宫殿', 'B. 金字塔是法老的陵墓，是权力的象征', 'C. 金字塔只有胡夫一座', 'D. 金字塔全部由平民自愿修建'],
+    answer: 1,
+    explanation: '金字塔是古代埃及法老为自己修建的陵墓，是集建筑、雕塑、天文知识于一体的文明杰作。胡夫金字塔是其中最大的，并非"只有一座"。（易错：金字塔是陵墓，不是宫殿！）'
+  },
+  {
+    id: 3, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '在古埃及，最高统治者被称为"法老"，下列有关法老说法正确的是：',
+    options: ['A. 法老由平民推举产生', 'B. 法老权力有限，受祭司限制', 'C. 法老被认为是神的化身，集军政大权于一身', 'D. 法老是文官头衔，不掌军权'],
+    answer: 2,
+    explanation: '法老自称是太阳神阿蒙之子，被看作是神的化身，拥有至高无上的权力，集军政大权于一身。（易错：法老是集权者，不是虚位！）'
+  },
+  {
+    id: 4, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '古代埃及人发明的古老文字和历法分别是：',
+    options: ['A. 楔形文字、太阳历', 'B. 象形文字、太阳历', 'C. 象形文字、太阴历', 'D. 楔形文字、农历'],
+    answer: 1,
+    explanation: '古埃及人发明了象形文字，并制定了最早的长篇历法——太阳历，将一年分为366天（一年365天加闰日）。楔形文字是两河流域的。（易错：象形文字在埃及，楔形文字在中东！）'
+  },
+  {
+    id: 5, unit: '第一单元 古代亚非文明', chapter: '第2课 古代两河流域',
+    question: '古代两河流域（美索不达米亚）孕育了辉煌文明，其代表性的文字是：',
+    options: ['A. 象形文字', 'B. 甲骨文', 'C. 楔形文字', 'D. 腓尼基字母'],
+    answer: 2,
+    explanation: '两河流域的苏美尔人创造了楔形文字，这是世界上最古老的文字之一。象形文字属于埃及，甲骨文属于中国。（易错：楔形文字写在泥板上，形状像钉子！）'
+  },
+  {
+    id: 6, unit: '第一单元 古代亚非文明', chapter: '第2课 古代两河流域',
+    question: '《汉谟拉比法典》刻在石柱上，是古代两河流域的重要文明成果。下列关于它的说法正确的是：',
+    options: ['A. 它是人类历史上第一部比较完备的成文法典', 'B. 它由埃及法老颁布', 'C. 它主张人人平等', 'D. 它属于中国夏朝的法律'],
+    answer: 0,
+    explanation: '《汉谟拉比法典》是古巴比伦国王汉谟拉比颁布的，是迄今已知世界上第一部较为完整的成文法典，是古巴比伦王国的标志。（易错：法典体现等级贵贱、拥有者地位不平等，绝不是"人人平等"！）'
+  },
+  {
+    id: 7, unit: '第一单元 古代亚非文明', chapter: '第2课 古代两河流域',
+    question: '公元前18世纪，在两河流域建立起强大统一的奴隶制国家——古巴比伦王国的国王是：',
+    options: ['A. 图特摩斯三世', 'B. 汉谟拉比', 'C. 阿育王', 'D. 凯撒'],
+    answer: 1,
+    explanation: '公元前18世纪，汉谟拉比统一两河流域，建立古巴比伦王国，并颁布《汉谟拉比法典》。（易错：图特摩斯三世、阿育王不是巴比伦统治者！）'
+  },
+  {
+    id: 8, unit: '第一单元 古代亚非文明', chapter: '第2课 古代两河流域',
+    question: '两河流域人民在数学方面的重要成就是：',
+    options: ['A. 发明了十进制', 'B. 发明了六十进制，并把圆周分为360度', 'C. 发明了零的概念', 'D. 仅供祭司使用，未传入其他地区'],
+    answer: 1,
+    explanation: '两河流域的苏美尔人发明了六十进制，把圆周分为360度。十进制与"零"的概念是古印度的贡献。（易错：六十进制是两河流域首创！）'
+  },
+  {
+    id: 9, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '古代印度实行严格的种姓制度，其中掌管神权、从事祭祀的等级是：',
+    options: ['A. 婆罗门', 'B. 刹帝利', 'C. 吠舍', 'D. 首陀罗'],
+    answer: 0,
+    explanation: '婆罗门掌管神权（祭司），刹帝利是国王和武士（掌管军事行政），吠舍是农民、牧民、手工业者和商人，首陀罗是被征服者。种姓高低贵贱不可逾越。（易错：掌管军政的是刹帝利，不是婆罗门！）'
+  },
+  {
+    id: 10, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '关于古印度种姓制度的说法正确的是：',
+    options: ['A. 各等级之间可以自由通婚流动', 'B. 各等级地位平等', 'C. 高低贵贱分明，世代相袭，不得随意变动', 'D. 首陀罗地位最高'],
+    answer: 2,
+    explanation: '种姓制度分四个等级，界限森严，世代相袭，法律上高低贵贱分明，不可随意流动。首陀罗地位最低。（易错：种姓制是严格世袭的！）'
+  },
+  {
+    id: 11, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '佛教的创始人乔达摩·悉达多被尊称为：',
+    options: ['A. 释迦牟尼', 'B. 穆罕默德', 'C. 耶稣', 'D. 拿破仑'],
+    answer: 0,
+    explanation: '乔达摩·悉达多后来被称为"释迦牟尼"，意即"释迦族的贤人"，创立了佛教。（易错：释迦牟尼是佛教教主，别与伊斯兰教、基督教的创始人混淆！）'
+  },
+  {
+    id: 12, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '我们今天常用的"阿拉伯数字"实际上最早是由哪一地区的人民发明的？',
+    options: ['A. 阿拉伯', 'B. 古代印度', 'C. 古代埃及', 'D. 古希腊'],
+    answer: 1,
+    explanation: '"阿拉伯数字"（0—9）最早是古代印度人发明的，后来经阿拉伯人传到欧洲，因此被称为"阿拉伯数字"。（易错：发明者是印度人，传播者是阿拉伯人！）'
+  },
+  {
+    id: 13, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '“法老的陵墓、尼罗河文明的标志”指的是：',
+    options: ['A. 汉谟拉比法典石柱', 'B. 狮身人面像与金字塔', 'C. 空中花园', 'D. 帕特农神庙'],
+    answer: 1,
+    explanation: '金字塔和狮身人面像是古埃及文明的标志性建筑，是法老权力的象征。空中花园属于两河流域，帕特农神庙属于古希腊。（易错：金字塔在埃及，空中花园在巴比伦！）'
+  },
+  {
+    id: 14, unit: '第一单元 古代亚非文明', chapter: '第2课 古代两河流域',
+    question: '古代两河流域苏美尔人发明的文字是用什么刻写的？',
+    options: ['A. 在青铜器上', 'B. 用削尖的芦苇或木杆在泥板上刻成楔形', 'C. 用毛笔在丝绸上', 'D. 用刀刻在龟甲上'],
+    answer: 1,
+    explanation: '苏美尔人用削尖的芦苇杆或木杆在潮湿的泥板上刻写，笔画成楔形，故称楔形文字。（易错：甲骨文是我国商代刻在龟甲兽骨上的！）'
+  },
+  {
+    id: 15, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '古印度种姓制度中，由武士、国王组成的第二等级是：',
+    options: ['A. 婆罗门', 'B. 刹帝利', 'C. 吠舍', 'D. 首陀罗'],
+    answer: 1,
+    explanation: '刹帝利是第二等级，由国王、武士组成，掌管军事和行政。（易错：等级顺序把婆罗门放第一、刹帝利第二、吠舍第三、首陀罗第四，要记牢！）'
+  },
+  {
+    id: 16, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '古埃及文明的发源地与"涨落给两岸带来沃土"最密切相关的是：',
+    options: ['A. 底格里斯河', 'B. 尼罗河', 'C. 印度河', 'D. 恒河'],
+    answer: 1,
+    explanation: '尼罗河每年的定期泛滥带来肥沃的淤泥，孕育了古埃及农业文明。（易错：底格里斯河在西亚、恒河在印度，都不是埃及！）'
+  },
+  {
+    id: 17, unit: '第一单元 古代亚非文明', chapter: '第2课 古代两河流域',
+    question: '下列关于《汉谟拉比法典》内容的正确表述是：',
+    options: ['A. 法典体现了"人人平等"原则', 'B. 法典维护奴隶主阶级的利益，反映明显的阶级性', 'C. 法典主张废除奴隶制', 'D. 法典由罗马皇帝颁布'],
+    answer: 1,
+    explanation: '《汉谟拉比法典》维护的是奴隶主阶级的利益，体现明显的阶级不平等，是古巴比伦王国强盛的象征。（易错：试题常挖"人人平等"的坑，法典恰恰是不平等的！）'
+  },
+  {
+    id: 18, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '佛教后来在印度得到很大发展，并在以下哪位国王的支持下传播至亚洲各地（含中国）？',
+    options: ['A. 汉谟拉比', 'B. 阿育王', 'C. 凯撒', 'D. 查理曼'],
+    answer: 1,
+    explanation: '孔雀王朝的阿育王大力推行佛教，佛教由此传播到南亚、东南亚、中国等地，成为世界性宗教。（易错：佛教兴盛并向外传播的关键推手是阿育王！）'
+  },
+  {
+    id: 19, unit: '第一单元 古代亚非文明', chapter: '第1课 古代埃及',
+    question: '古埃及在法老统治下，其最高统治机构与行政特点可概括为：',
+    options: ['A. 民主共和制', 'B. 中央集权化的君主专制', 'C. 部落联盟制', 'D. 议会君主制'],
+    answer: 1,
+    explanation: '古埃及形成中央集权的君主专制，法老是国家最高统治者，集神权、军权、行政权于一身。（易错：古埃及不是民主制，是专制君主制！）'
+  },
+  {
+    id: 20, unit: '第一单元 古代亚非文明', chapter: '第3课 古代印度',
+    question: '在世界古文明中，产生于南亚"恒河—印度河流域"、并创立世界三大宗教之一佛教的文明是：',
+    options: ['A. 古埃及文明', 'B. 两河文明', 'C. 古印度文明', 'D. 中华文明'],
+    answer: 2,
+    explanation: '古印度文明诞生于印度河流域并扩展到恒河流域，是佛教的发源地。（易错：注意各文明与"河流—宗教—文字"的对应关系，这是常考连线题！）'
+  },
+
+  // ================= 第二单元 古代欧洲文明 =================
+  {
+    id: 21, unit: '第二单元 古代欧洲文明', chapter: '第4课 古希腊',
+    question: '公元前5世纪中后期，雅典城邦民主政治发展到高峰，其最高权力机构"公民大会"的做法是：',
+    options: ['A. 只有贵族有权参加并表决', 'B. 全体成年公民均可参加，就重大问题投票表决', 'C. 由国王一人决定', 'D. 由祭司垄断决策权'],
+    answer: 1,
+    explanation: '在伯里克利主政时期，雅典所有成年男性公民都可以参加最高权力机构公民大会，商议内政外交等大事。（易错：妇女、外邦人、奴隶无权利，且仅限于 "成年男性公民"！）'
+  },
+  {
+    id: 22, unit: '第二单元 古代欧洲文明', chapter: '第4课 古希腊',
+    question: '推动雅典民主政治发展到高峰的政治家是：',
+    options: ['A. 亚历山大', 'B. 伯里克利', 'C. 凯撒', 'D. 苏格拉底'],
+    answer: 1,
+    explanation: '伯里克利主政时期（约公元前5世纪中后期），雅典民主政治达到顶峰。（易错：注意是伯里克利，不是苏格拉底——苏格拉底是哲学家！）'
+  },
+  {
+    id: 23, unit: '第二单元 古代欧洲文明', chapter: '第4课 古希腊',
+    question: '下列关于雅典民主的局限性，表述正确的是：',
+    options: ['A. 全体居民享有民主权利', 'B. 妇女、外邦人和奴隶不享有民主权利', 'C. 民主是每个人的权利', 'D. 无所谓局限性'],
+    answer: 1,
+    explanation: '雅典民主是"成年男性公民"的民主，妇女、外邦人、奴隶均无公民权，数量上占多数的非公民被排除在外，存在明显局限。（易错：考点高频挖"全体居民都享有民主"的坑！）'
+  },
+  {
+    id: 24, unit: '第二单元 古代欧洲文明', chapter: '第4课 古希腊',
+    question: '公元前4世纪，马其顿国王亚历山大率军东征，建立起地跨欧、亚、非三洲的大帝国。对其评价正确的是：',
+    options: ['A. 东征只有破坏性', 'B. 东征客观上促进了东西方文化交流', 'C. 东征未触及东方文明', 'D. 东征使希腊文明消失'],
+    answer: 1,
+    explanation: '亚历山大东征虽给被征服地区带来破坏，但也把希腊文化传播到东方，同时吸收了东方文化，客观上促进了东西方经济文化交流。（易错：评价历史事件要"一分为二"，既有破坏也有促进交流的积极面！）'
+  },
+  {
+    id: 25, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '罗马共和国时期，掌管国家大权、由贵族组成的机构是：',
+    options: ['A. 公民大会', 'B. 元老院', 'C. 执政官', 'D. 保民官'],
+    answer: 1,
+    explanation: '罗马共和国时期，元老院由贵族组成，掌握国家实权；执政官是日常的最高行政首脑。（易错：元老院掌管实权，公民大会是形式上的机构！）'
+  },
+  {
+    id: 26, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '罗马的第一部成文法律是公元前450年左右颁布的，刻在十二块铜表上，被称为什么？',
+    options: ['A. 《汉谟拉比法典》', 'B. 《十二铜表法》', 'C. 《权力法案》', 'D. 《人权宣言》'],
+    answer: 1,
+    explanation: '《十二铜表法》是罗马第一部成文法律，它使法律量刑有了文字的明文依据，限制了贵族对法律解释权的滥用。（易错：《权力法案》是英国的，别混！）'
+  },
+  {
+    id: 27, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '公元前27年，罗马共和国演变为罗马帝国，建立这一帝制、被称为"罗马帝国第一公民"的是：',
+    options: ['A. 凯撒', 'B. 屋大维', 'C. 君士坦丁', 'D. 查士丁尼'],
+    answer: 1,
+    explanation: '公元前27年，屋大维首创"元首制"，完成从共和国到罗马帝国的过渡，他被尊称为"奥古斯都"。（易错：凯撒是军事强人但最终失败谋杀；建立帝国的是屋大维！）'
+  },
+  {
+    id: 28, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '2世纪时，罗马帝国进入鼎盛时期，此时的帝国被称为：',
+    options: ['A. "条条大路通罗马"的强国', 'B. "骑在蓝色大海上的大国"', 'C. "日不落帝国"', 'D. "地中海的霸主但经济衰落"'],
+    answer: 0,
+    explanation: '2世纪罗马帝国疆域辽阔、交通发达，"条条大路通罗马"正是这一时期罗马国力强盛、交通便利的写照。（易错："日不落帝国"指近代西班牙和英国，不属于罗马！）'
+  },
+  {
+    id: 29, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '古希腊文学中，描写特洛伊战争的史诗《荷马史诗》，其作者相传是荷马。下列理解正确的是：',
+    options: ['A. 荷马是真实可考的历史人物', 'B. 《荷马史诗》反映的是希腊早期历史与社会生活，是宝贵文献', 'C. 它是古罗马的作品', 'D. 它是佛教经典'],
+    answer: 1,
+    explanation: '《荷马史诗》相传是盲诗人荷马创编，反映了希腊早期"英雄时代"的社会生活，是研究早期希腊社会的重要史料。（易错：史诗带神话色彩，不能当作完全真实的历史！）'
+  },
+  {
+    id: 30, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '古希腊罗马建筑艺术成就辉煌，下列属于罗马建筑的代表是：',
+    options: ['A. 帕特农神庙', 'B. 万神庙与新罗马竞技场（角斗场）', 'C. 金字塔', 'D. 泰姬陵'],
+    answer: 1,
+    explanation: '罗马建筑以拱门、圆柱、大竞技场（斗兽场）、万神庙著称；帕特农神庙是希腊建筑，金字塔是埃及建筑。（易错：帕特农神庙属于古希腊！）'
+  },
+  {
+    id: 31, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '被誉为"西方哲学之父"、提出"认识你自己"，并在罗审判中饮鸩而亡的希腊哲学家是：',
+    options: ['A. 柏拉图', 'B. 苏格拉底', 'C. 亚里士多德', 'D. 荷马'],
+    answer: 1,
+    explanation: '苏格拉底是古希腊著名哲学家，主张"认识你自己"，因被指控腐化青年而被判处死刑。（易错：苏格拉底的弟子是柏拉图，不要张冠李戴！）'
+  },
+  {
+    id: 32, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '古罗马的历法是在哪一位君主时期颁布，后来被广泛沿用直至近代？',
+    options: ['A. 屋大维', 'B. 凯撒', 'C. 伯里克利', 'D. 亚历山大'],
+    answer: 1,
+    explanation: '凯撒命人以太阳历（埃及历法）为基础制定新历法，史称"儒略历"，为现代公历的诞生奠定基础。（易错：制定儒略历的是凯撒！）'
+  },
+  {
+    id: 33, unit: '第二单元 古代欧洲文明', chapter: '第4课 古希腊',
+    question: '古希腊城邦中，一个以尚武、注重军事训练著称的城邦是：',
+    options: ['A. 雅典', 'B. 斯巴达', 'C. 特洛伊', 'D. 迦太基'],
+    answer: 1,
+    explanation: '斯巴达崇尚武力，重视军事训练；雅典则以民主政治与文化著称。两者是古希腊最著名的两个城邦。（易错：斯巴达尚武、雅典尚文，要分清！）'
+  },
+  {
+    id: 34, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '罗马帝国后期统治衰落，395年罗马帝国分裂为东西两部分，其中继续存在近千年的是东罗马帝国，它又称：',
+    options: ['A. 拜占庭帝国', 'B. 奥斯曼帝国', 'C. 查理曼帝国', 'D. 亚历山大帝国'],
+    answer: 0,
+    explanation: '东部罗马帝国定都君士坦丁堡（原拜占庭城），故称拜占庭帝国，一直延续到1453年被奥斯曼帝国灭亡。（易错：东罗马即拜占庭，西罗马476年就灭亡了！）'
+  },
+  {
+    id: 35, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '"吾爱吾师，我更爱真理"这一名言出自古希腊哲学家：',
+    options: ['A. 苏格拉底', 'B. 柏拉图', 'C. 亚里士多德', 'D. 毕达哥拉斯'],
+    answer: 2,
+    explanation: '亚里士多德是百科全书式的学者、柏拉图的学生，提出"吾爱吾师，吾更爱真理"。（易错：亚里士多德——柏拉图的得意门生！）'
+  },
+  {
+    id: 36, unit: '第二单元 古代欧洲文明', chapter: '第4课 古希腊',
+    question: '公元前334年，马其顿国王发动东征，历时十年建立了地跨欧亚非的大帝国，他是：',
+    options: ['A. 亚历山大', 'B. 大汉武帝刘彻', 'C. 屋大维', 'D. 大流士'],
+    answer: 0,
+    explanation: '亚历山大是马其顿国王，公元前334年起东征，建立古史上第一个地跨欧亚非的大帝国之一。（易错：亚历山大是马其顿人，不是希腊城邦本地人！）'
+  },
+  {
+    id: 37, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '古希腊哲学家柏拉图提出了一个影响深远的主张：',
+    options: ['A. 实行奴隶制', 'B. 建立由"哲学王"统治的理想国', 'C. 信仰基督教', 'D. 发展工商业'],
+    answer: 1,
+    explanation: '柏拉图在《理想国》中提出由"哲学王"执政的理想社会蓝图。（易错：柏拉图是苏格拉底的学生、亚里士多德的老师，传承线要记牢！）'
+  },
+  {
+    id: 38, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '公元前49年，罗马共和国内部的强人率军进攻罗马，自立为终身独裁官，次年遇刺，他是：',
+    options: ['A. 屋大维', 'B. 凯撒', 'C. 安东尼', 'D. 西塞罗'],
+    answer: 1,
+    explanation: '凯撒于公元前49年进军罗马，出任独裁官，实行政制改革，公元前44年被元老派刺杀。（易错：凯撒未称帝便遇刺，建立帝国的是屋大维！）'
+  },
+  {
+    id: 39, unit: '第二单元 古代欧洲文明', chapter: '第6课 希腊罗马古典文化',
+    question: '被誉为"欧洲戏剧的始祖"、古希腊三大悲剧作家中的代表人物是：',
+    options: ['A. 索福克勒斯', 'B. 亚里士多德', 'C. 荷马', 'D. 柏拉图'],
+    answer: 0,
+    explanation: '古希腊戏剧成就巨大，索福克勒斯的《俄狄浦斯王》是古希腊悲剧的典范。（易错：戏剧属于古希腊文化成就之一，常与建筑、哲学并列考查。）'
+  },
+  {
+    id: 40, unit: '第二单元 古代欧洲文明', chapter: '第5课 古罗马',
+    question: '下列关于古罗马由共和走向帝制的叙述，正确的是：',
+    options: ['A. 凯撒建立了罗马帝国', 'B. 屋大维实行的"元首制"标志着罗马进入帝国时代', 'C. 罗马从未有过共和国', 'D. 罗马帝国在1世纪就分裂了'],
+    answer: 1,
+    explanation: '公元前27年屋大维建立"元首制"，实质上是君主专制，罗马进入帝国时代。罗马共和国在前、帝国在后。（易错：建立帝国的是屋大维，凯撒只是过渡人物！）'
+  },
+
+  // ================= 第三单元 封建时代的欧洲 =================
+  {
+    id: 41, unit: '第三单元 封建时代的欧洲', chapter: '第7课 法兰克王国与基督教',
+    question: '西欧在随后的封建时代逐渐形成的封君封臣制度，其基础与核心纽带是：',
+    options: ['A. 血缘关系', 'B. 土地分封', 'C. 自由贸易', 'D. 宗教信仰'],
+    answer: 1,
+    explanation: '西欧封君封臣制度以土地分封（采邑）为纽带，受封者（附庸）对封君效忠，形成层层分封的封建等级关系。（易错：纽带是"土地"，靠采邑维系！）'
+  },
+  {
+    id: 42, unit: '第三单元 封建时代的欧洲', chapter: '第7课 法兰克王国与基督教',
+    question: '8世纪中期，法兰克国王查理把法兰克王国的版图扩大到前所未有的程度，其建立的帝国后来被称为什么？',
+    options: ['A. 神圣罗马帝国', 'B. 查理曼帝国', 'C. 拜占庭帝国', 'D. 奥斯曼帝国'],
+    answer: 1,
+    explanation: '查理（查理曼）在8世纪后期使法兰克王国版图大增，教皇为其加冕称帝，史称查理曼帝国。（易错：843年帝国分裂为三，奠定了近代法德意三国雏形！）'
+  },
+  {
+    id: 43, unit: '第三单元 封建时代的欧洲', chapter: '第7课 法兰克王国与基督教',
+    question: '843年，查理曼帝国一分为三，它们大致奠定了下列哪些近代国家的雏形？',
+    options: ['A. 法、德、意', 'B. 英、法、西', 'C. 俄、土、奥', 'D. 荷、比、卢'],
+    answer: 0,
+    explanation: '843年查理曼帝国三分，东中西三部分大致成为近代法国、德国、意大利的雏形。（易错：这是"三分法兰克"考点，奠定法德意三国！）'
+  },
+  {
+    id: 44, unit: '第三单元 封建时代的欧洲', chapter: '第8课 西欧庄园',
+    question: '西欧封建社会主要的农业组织形式"庄园"，其特点正确的是：',
+    options: ['A. 庄园完全依赖货币交换', 'B. 庄园是一个自给自足的经济单位', 'C. 庄园与外界毫无联系', 'D. 庄园由国王直接经营'],
+    answer: 1,
+    explanation: '庄园的经济形态自给自足，农奴为领主耕作（自营地），同时保有自己的"份地"，整个庄园可满足大部分生产生活需要。（易错：庄园自给自足，商品交换很少！）'
+  },
+  {
+    id: 45, unit: '第三单元 封建时代的欧洲', chapter: '第8课 西欧庄园',
+    question: '在西欧庄园中，维护庄园正常生活与秩序、由农民共同使用并保留部分自由权利的公共场所之一是：',
+    options: ['A. 磨坊专供领主一人', 'B. 庄园法庭与公共牧场、林地', 'C. 市场完全自主', 'D. 道路禁止通行'],
+    answer: 1,
+    explanation: '庄园中有公共的牧场、林地供农民共同使用，并设有庄园法庭调节内部纠纷、维护公共秩序，是庄园的重要机构。（易错：庄园法庭既维护领主利益，也在一定程度上维护佃农权益。）'
+  },
+  {
+    id: 46, unit: '第三单元 封建时代的欧洲', chapter: '第9课 城市的兴起与大学的产生',
+    question: '10世纪起，西欧一些城市逐渐兴起，其获取自治权的重要方式之一是（如法国琅城）：',
+    options: ['A. 靠流血斗争和金钱购得', 'B. 纯靠国王封赏', 'C. 完全依靠教会', 'D. 不需要任何方式'],
+    answer: 0,
+    explanation: '西欧城市兴起后，市民为争取自治权进行了长期斗争，有的（如琅城）通过武装起义和购买特许状等方式获得一定自治。（易错：城市自治是多途径、长期的斗争结果！）'
+  },
+  {
+    id: 47, unit: '第三单元 封建时代的欧洲', chapter: '第9课 城市的兴起与大学的产生',
+    question: '伴随着城市的兴起，中世纪的西欧出现了"大学的兴起"。下列关于中世纪大学的说法正确是：',
+    options: ['A. 大学是自发形成的教师与学生行会，是自治组织', 'B. 大学完全由国王控制', 'C. 大学不讲授古典课程', 'D. 大学在中世纪未产生'],
+    answer: 0,
+    explanation: '12世纪后，西欧一些以城市为依托的大学（如巴黎大学、博洛尼亚大学）由教师与学生行会自发组成，享有一定自治权，讲授文法、哲学等"七艺"课程。（易错：大学是"自发性组织"、"行会"性质，常成考点！）'
+  },
+  {
+    id: 48, unit: '第三单元 封建时代的欧洲', chapter: '第9课 城市的兴起与大学的产生',
+    question: '中世纪城市兴起后，形成了新的阶层——市民阶层，后来成为下列哪一阶级的前身？',
+    options: ['A. 地主阶级', 'B. 早期资产阶级', 'C. 无产阶级', 'D. 奴隶主阶级'],
+    answer: 1,
+    explanation: '城市工商业者组成的市民阶层，随着资本主义萌芽的发展，逐渐成为早期的资产阶级，推动社会变革。（易错：市民阶层是资产阶级的前身！）'
+  },
+  {
+    id: 49, unit: '第三单元 封建时代的欧洲', chapter: '第10课 拜占庭帝国',
+    question: '东罗马帝国（拜占庭帝国）在司法上的重要性在于，6世纪查士丁尼组织法学家编纂了《罗马民法大全》，它：',
+    options: ['A. 是一部空想的法律', 'B. 是罗马法体系的一次大整理与集大成，对后世法律影响深远', 'C. 只适用于东方', 'D. 立即消灭了奴隶制'],
+    answer: 1,
+    explanation: '查士丁尼组织编纂的《罗马民法大全》是欧洲历史上第一部系统完备的法律文献，对近代欧洲各国立法产生深远影响。（易错：《罗马民法大全》是查士丁尼的重要贡献，常考！）'
+  },
+  {
+    id: 50, unit: '第三单元 封建时代的欧洲', chapter: '第10课 拜占庭帝国',
+    question: '拜占庭帝国保存并继承了古代希腊罗马文化遗产，直到1453年最终被哪一个帝国所灭？',
+    options: ['A. 奥斯曼帝国', 'B. 神圣罗马帝国', 'C. 罗马帝国', 'D. 阿拉伯帝国'],
+    answer: 0,
+    explanation: '1453年，奥斯曼帝国攻陷君士坦丁堡，拜占庭帝国（东罗马）灭亡。拜占庭文化在今天的影响依然深远。（易错：476年西罗马灭亡，1453年东罗马灭亡，两个时间都要记牢！）'
+  },
+  {
+    id: 51, unit: '第三单元 封建时代的欧洲', chapter: '第7课 法兰克王国与基督教',
+    question: '中世纪西欧，基督教在当时社会政治生活中的地位是：',
+    options: ['A. 完全被封建王权压制', 'B. 教会拥有大量地产，在社会生活中占有重要地位，并影响教育和思想', 'C. 与政治毫无关系', 'D. 教会不参与世俗事务'],
+    answer: 1,
+    explanation: '中世纪教会兼有神权与世俗权力，拥有大量土地，兴办教育、垄断思想文化，是封建统治的重要支柱。（易错：教会既是精神统治者，也占有大量地产，属世俗大封建主！）'
+  },
+  {
+    id: 52, unit: '第三单元 封建时代的欧洲', chapter: '第8课 西欧庄园',
+    question: '庄园中"自营地"与"份地"的说法正确的是：',
+    options: ['A. 自营地由农奴无偿耕作，收获归领主', 'B. 份地收获全部归领主', 'C. 份地由领主无偿耕作', 'D. 自营地归农民所有'],
+    answer: 0,
+    explanation: '自营地归领主所有，农奴须无偿为之劳作；自己的"份地"则由农民耕种，收获归自己。（易错：自营地领主所得、份地农民所得，别弄反！）'
+  },
+  {
+    id: 53, unit: '第三单元 封建时代的欧洲', chapter: '第7课 法兰克王国与基督教',
+    question: '法兰克王国的建立者，率先皈依基督教、使法兰克王国的势力日益强大的国王是：',
+    options: ['A. 克洛维', 'B. 查理曼', 'C. 罗慕路斯', 'D. 君士坦丁'],
+    answer: 0,
+    explanation: '日耳曼人在高卢地区建立法兰克王国，其统治者克洛维接受基督教，势力日益强大，是法兰克的开国君主。（易错：克洛维是最先皈依基督教的日耳曼国王之一！）'
+  },
+  {
+    id: 54, unit: '第三单元 封建时代的欧洲', chapter: '第9课 城市的兴起与大学的产生',
+    question: '中世纪大学以城市为依托、由师生行会自发形成。位于意大利、被公认为世界最古老大学之一的学校是：',
+    options: ['A. 博洛尼亚大学', 'B. 牛津大学', 'C. 哈佛大学', 'D. 剑桥大学'],
+    answer: 0,
+    explanation: '博洛尼亚大学建立于意大利，是世界最古老的大学之一。牛津、剑桥在英国，哈佛在美国。（易错：西方现代大学起源于中世纪欧洲"行会式"大学！）'
+  },
+  {
+    id: 55, unit: '第三单元 封建时代的欧洲', chapter: '第10课 拜占庭帝国',
+    question: '拜占庭帝国的都城君士坦丁堡，其旧称是古城拜占庭，它位于：',
+    options: ['A. 尼罗河畔', 'B. 欧亚之间的战略要地', 'C. 大西洋沿岸', 'D. 多瑙河源头'],
+    answer: 1,
+    explanation: '君士坦丁堡位于欧亚两洲交界、扼守黑海与地中海的要道，是东西方贸易的重要枢纽。（易错：拜占庭帝国别名与地理位置为常见考点！）'
+  },
+  {
+    id: 56, unit: '第三单元 封建时代的欧洲', chapter: '第8课 西欧庄园',
+    question: '庄园中农民与领主之间存在依附关系，这些农民被称为：',
+    options: ['A. 自由民', 'B. 农奴', 'C. 佣兵', 'D. 公民'],
+    answer: 1,
+    explanation: '庄园中的大多数农民是农奴，他们被束缚在土地上，人身依附于领主，须服劳役、交租税。（易错：农奴不是自由民，其人身居相对不自由状态！）'
+  },
+  {
+    id: 57, unit: '第三单元 封建时代的欧洲', chapter: '第9课 城市的兴起与大学的产生',
+    question: '中世纪城市兴起的直接经济原因是：',
+    options: ['A. 农业生产力的提高带来剩余产品，促进了手工业与商业的发展', 'B. 政治大变革', 'C. 战争频繁', 'D. 宗教改革'],
+    answer: 0,
+    explanation: '农业进步为手工业、商业提供剩余产品，西欧经济中工商业比重上升，城市由此复兴。（易错：城市兴起的根本动因是经济发展！）'
+  },
+  {
+    id: 58, unit: '第三单元 封建时代的欧洲', chapter: '第10课 拜占庭帝国',
+    question: '拜占庭帝国继承了罗马古典文化，并将其发展，最终这文化也被称为什么？',
+    options: ['A. 拜占庭文化', 'B. 阿拉伯文化', 'C. 基督教文化', 'D. 日耳曼文化'],
+    answer: 0,
+    explanation: '拜占庭文化在继承希腊罗马文化的基础上发展，兼具古典与东方色彩，被称为拜占庭文化。（易错：拜占庭文化是"东西方交融"的产物！）'
+  },
+
+  // ================= 第四单元 封建时代的亚洲与非洲 =================
+  {
+    id: 59, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第11课 古代日本',
+    question: '日本在公元7世纪中叶，以唐朝制度为蓝本进行的大规模社会变革，史称：',
+    options: ['A. 明治维新', 'B. 大化改新', 'C. 明治改新', 'D. 班田改革'],
+    answer: 1,
+    explanation: '7世纪中叶（646年）日本孝德天皇仿照唐朝制度进行改革，因为年号大化，史称"大化改新"，使日本发展成为一个中央集权制国家。（易错：大化改新学习的是中国古代隋唐的制度！）'
+  },
+  {
+    id: 60, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第11课 古代日本',
+    question: '大化改新的内容包括：',
+    options: ['A. 确定土地私有', 'B. 确立中央集权政治、实行班田收授法', 'C. 推行民主制度', 'D. 废除天皇'],
+    answer: 1,
+    explanation: '大化改新教材指出其确立中央集权政治、实行班田收授法等内容，仿照唐朝的制度，使日本国家走向统一与集权。（易错：大化改新是"吸收唐制"的全面改革！）'
+  },
+  {
+    id: 61, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第11课 古代日本',
+    question: '约12世纪日本进入武士长期掌权的"幕府"时代，第一个武士政权"镰仓幕府"的建立者是：',
+    options: ['A. 源赖朝', 'B. 德川家康', 'C. 织田信长', 'D. 丰臣秀吉'],
+    answer: 0,
+    explanation: '12世纪末，源赖朝建立日本第一个武士政权镰仓幕府，此后日本进入幕府统治时期。（易错：镰仓幕府是源赖朝建立，武士阶层实力上升！）'
+  },
+  {
+    id: 62, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第11课 古代日本',
+    question: '大化改新后，日本从奴隶制国家逐步转变为：',
+    options: ['A. 民主共和国', 'B. 中央集权的封建制国家', 'C. 联邦制国家', 'D. 帝国主义国家'],
+    answer: 1,
+    explanation: '大化改新学习唐朝，使日本确立了中央集权的封建制度，天皇制国家逐渐完善。（易错：大化改新使日本进入封建社会！）'
+  },
+  {
+    id: 63, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第12课 阿拉伯帝国',
+    question: '伊斯兰教的创立者为出生于阿拉伯半岛的：',
+    options: ['A. 耶稣基督', 'B. 穆罕默德', 'C. 释迦牟尼', 'D. 摩西'],
+    answer: 1,
+    explanation: '7世纪初（610年前后），穆罕默德在麦加创立伊斯兰教，此后在麦地那建立政教合一的国家。（易错：穆罕默德创立伊斯兰教、耶稣创立基督教、释迦牟尼创立佛教，三教创始人要分清！）'
+  },
+  {
+    id: 64, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第12课 阿拉伯帝国',
+    question: '穆罕默德创建伊斯兰教初期，为摆脱商业贵族的迫害，622年他带领信徒迁徙到何处并在此建立了政教合一国家？',
+    options: ['A. 麦加', 'B. 麦地那', 'C. 耶路撒冷', 'D. 巴格达'],
+    answer: 1,
+    explanation: '622年，穆罕默德率信徒迁居麦地那，在麦地那建立了政教合一的国家，该年后来成为伊斯兰历（回历）的纪元元年。（易错：622年"希吉拉"迁往麦地那是重要考点！）'
+  },
+  {
+    id: 65, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第12课 阿拉伯帝国',
+    question: '阿拉伯帝国鼎盛时期地跨欧、亚、非三大洲，其著名的文化中心是巴格达的什么机构？',
+    options: ['A. "智慧宫"', 'B. "太阳神学院"', 'C. "奥林匹克学院"', 'D. "柏拉图学园"'],
+    answer: 0,
+    explanation: '阿拉伯帝国在巴格达设立"智慧宫"，大量翻译希腊、印度、波斯等典籍，保存并发展了世界文明成果。（易错：阿拉伯人扮演了东西方文化传播交流的桥梁角色！）'
+  },
+  {
+    id: 66, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第12课 阿拉伯帝国',
+    question: '阿拉伯人对世界文化的重要贡献之一是：',
+    options: ['A. 发明了印刷术', 'B. 把中国发明的造纸术等传播到西方', 'C. 发明了火药', 'D. 发明了指南针'],
+    answer: 1,
+    explanation: '阿拉伯人在东西方文化交流中起关键作用，中国四大发明中的造纸术等经阿拉伯人传到欧洲，同时阿拉伯数字也借此传入欧洲。（易错：四大发明是中国发明的，阿拉伯人是"传播者"，不要张冠李戴！）'
+  },
+  {
+    id: 67, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第13课 古代非洲',
+    question: '公元8—16世纪，在西北非洲兴起强盛的古代国家，其王被称为"金子之王"，这个国家是：',
+    options: ['A. 加纳', 'B. 马里', 'C. 埃塞俄比亚', 'D. 刚果'],
+    answer: 0,
+    explanation: '西非的加纳王国因盛产黄金被称为"黄金之国""金子之王"，是古代非洲文明的重要代表。（易错：西非加纳、马里等国以黄金和丰富贸易闻名！）'
+  },
+  {
+    id: 68, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第13课 古代非洲',
+    question: '东非沿海贸易繁荣的城市（如肯尼亚沿海的蒙巴萨）主要依托什么经济而兴起？',
+    options: ['A. 内陆游牧', 'B. 海上贸易往来', 'C. 纯农业', 'D. 纯粹渔业'],
+    answer: 1,
+    explanation: '东非沿海城市凭借印度洋海上贸易（宝石、黄金、香料、奴隶等）而繁荣，与阿拉伯地区联系密切。（易错：东非城市兴起于海上贸易，属印度洋贸易体系！）'
+  },
+  {
+    id: 69, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第12课 阿拉伯帝国',
+    question: '阿拉伯帝国在文化上成就斐然，以下属于其文学成就代表的是：',
+    options: ['A. 《神曲》', 'B. 《一千零一夜》（《天方夜谭》）', 'C. 《荷马史诗》', 'D. 《罗摩衍那》'],
+    answer: 1,
+    explanation: '阿拉伯文学以《一千零一夜》（又译《天方夜谭》）最为著名，是阿拉伯民间故事的瑰宝。（易错：《神曲》是意大利但丁、《荷马史诗》是希腊的！）'
+  },
+  {
+    id: 70, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第11课 古代日本',
+    question: '大化改新受唐朝影响，下列最能体现其"仿唐改新"特点的是：',
+    options: ['A. 建立中央集权国家、实行土地国有和班田收授法', 'B. 推行资产阶级宪法', 'C. 实行封建割据', 'D. 全面西化'],
+    answer: 0,
+    explanation: '大化改新学习唐朝的中央集权制度与均田思想，实行土地国有和班田收授，反映出受唐制深刻影响。（易错：大化改新吸收的是中国隋唐制度！）'
+  },
+  {
+    id: 71, unit: '第四单元 封建时代的亚洲与非洲', chapter: '第12课 阿拉伯帝国',
+    question: '阿拉伯帝国的开国者是公元6—7世纪统一半岛并创立伊斯兰教的：',
+    options: ['A. 穆罕默德', 'B. 阿布·伯克尔', 'C. 奥斯曼', 'D. 拿破仑'],
+    answer: 0,
+    explanation: '穆罕默德统一阿拉伯半岛并创立伊斯兰教，为阿拉伯帝国的建立奠基。（易错：穆罕默德既是宗教领袖，也是政治军事统一者，政教合一的雏形由此而来！）'
+  },
+
+  // ================= 走向近代 / 资本主义初步确立 / 工业革命 =================
+  {
+    id: 72, unit: '走向近代·欧美革命与工业革命', chapter: '第14课 文艺复兴运动',
+    question: '文艺复兴最早兴起于意大利，其核心思想是：',
+    options: ['A. 主权在民', 'B. 人文主义', 'C. 天赋人权', 'D. 均贫富'],
+    answer: 1,
+    explanation: '文艺复兴以"人文主义"为核心，强调以人为中心，肯定人的价值和尊严，反对神学迷信。（易错：人文主义是"以人为中心"，不是"以神为中心"！）'
+  },
+  {
+    id: 73, unit: '走向近代·欧美革命与工业革命', chapter: '第14课 文艺复兴运动',
+    question: '文艺复兴的先驱、"中世纪的最后一位诗人"，其代表作《神曲》的作者是：',
+    options: ['A. 但丁', 'B. 达·芬奇', 'C. 米开朗琪罗', 'D. 莎士比亚'],
+    answer: 0,
+    explanation: '但丁（意大利）是文艺复兴的先驱，代表作《神曲》揭露教会的腐化，表达了对人性的肯定。（易错：但丁——文艺复兴"先驱"、《神曲》，这两个店名必考！）'
+  },
+  {
+    id: 74, unit: '走向近代·欧美革命与工业革命', chapter: '第14课 文艺复兴运动',
+    question: '文艺复兴时期英国著名戏剧家，讽刺当时的假仁假义，代表作有《哈姆雷特》《罗密欧与朱丽叶》等的是：',
+    options: ['A. 但丁', 'B. 莎士比亚', 'C. 达·芬奇', 'D. 薄伽丘'],
+    answer: 1,
+    explanation: '莎士比亚是文艺复兴时期英国伟大的戏剧家，创作了大量体现人文主义思想的剧作。（易错：莎士比亚是英国的，《哈姆雷特》是他的名作！）'
+  },
+  {
+    id: 75, unit: '走向近代·欧美革命与工业革命', chapter: '第14课 文艺复兴运动',
+    question: '下列哪一思想是文艺复兴对"神学世界观"的有力冲击，体现了"人"的觉醒？',
+    options: ['A. 鼓励人们追求现世幸福', 'B. 推崇盲从神权', 'C. 提倡禁欲主义', 'D. 否定人性'],
+    answer: 0,
+    explanation: '人文主义者提倡追求现世的幸福与理性，反对禁欲主义和盲目崇拜神权，这是文艺复兴兴起的根本意义。（易错：文艺复兴鼓励"追求现世幸福"，提倡以人为本！）'
+  },
+  {
+    id: 76, unit: '走向近代·欧美革命与工业革命', chapter: '第15课 开辟新航路',
+    question: '15世纪末发现美洲大陆、却误以为抵达印度而称呼当地居民为"印第安人"的航海家是：',
+    options: ['A. 迪亚士', 'B. 达·伽马', 'C. 哥伦布', 'D. 麦哲伦'],
+    answer: 2,
+    explanation: '1492年哥伦布横渡大西洋到达美洲，他至死认为到达的是印度，故名其地因"印第安人"，但美洲是"新大陆"。（易错：哥伦布到达的是美洲，不是印度！）'
+  },
+  {
+    id: 77, unit: '走向近代·欧美革命与工业革命', chapter: '第15课 开辟新航路',
+    question: '首次完成环球航行、用实践证实了"地球是圆的"的船队是：',
+    options: ['A. 迪亚士船队', 'B. 达·伽马船队', 'C. 麦哲伦船队', 'D. 哥伦布船队'],
+    answer: 2,
+    explanation: '1519—1522年，麦哲伦船队横渡大西洋、太平洋、印度洋，完成了人类首次环球航行。（易错：麦哲伦本人未走完全程，其船队完成了航行！）'
+  },
+  {
+    id: 78, unit: '走向近代·欧美革命与工业革命', chapter: '第15课 开辟新航路',
+    question: '新航路的开辟对世界历史最重要的影响是：',
+    options: ['A. 使欧洲与美洲、亚洲、非洲联系起来，世界开始连为一个整体', 'B. 完全保留世界各地区的隔绝', 'C. 使美洲殖民完全消失', 'D. 使欧洲封建制加强'],
+    answer: 0,
+    explanation: '新航路开辟打破了以往世界各大洲的相对隔绝状态，使"世界开始成为整体"，同时引发殖民掠夺与商贸发展。（易错：新航路开辟的世界意义是"世界逐渐联成一体"！）'
+  },
+  {
+    id: 79, unit: '走向近代·欧美革命与工业革命', chapter: '第17课 三角贸易',
+    question: '16—18世纪欧洲殖民者所从事的"三角贸易"，其主要内容是：',
+    options: ['A. 非洲→欧洲→美洲的奴隶贸易循环', 'B. 纯货物公平贸易', 'C. 亚洲→欧洲的香料贸易', 'D. 欧洲→非洲→美洲的三角贩卖（以贩卖黑人奴隶为核心）'],
+    answer: 3,
+    explanation: '欧洲往非洲贩卖武器、廉价商品换取黑奴，把黑奴运到美洲出卖，再回欧洲贩卖美洲产品，故称"三角贸易"，它给非洲带来巨大灾难。（易错：三角贸易是罪恶的奴隶贸易，严重摧残非洲！）'
+  },
+  {
+    id: 80, unit: '走向近代·欧美革命与工业革命', chapter: '第16课 早期殖民掠夺',
+    question: '新航路开辟后，葡萄牙、西班牙最先走上殖民扩张，随后荷兰、法国、英国也参与，其中在17世纪被称为"海上马车夫"的是：',
+    options: ['A. 荷兰', 'B. 西班牙', 'C. 葡萄牙', 'D. 俄国'],
+    answer: 0,
+    explanation: '17世纪，荷兰凭借强大的海上商业与航运业被称为"海上马车夫"，占据广泛的海外殖民地。（易错："海上马车夫"指荷兰！）'
+  },
+  {
+    id: 81, unit: '走向近代·欧美革命与工业革命', chapter: '第18课 英国资产阶级革命',
+    question: '英国资产阶级革命的开始标志是1640年：',
+    options: ['A. 议会重新召开', 'B. 处死查理一世', 'C. 光荣革命爆发', 'D. 《权利法案》颁布'],
+    answer: 0,
+    explanation: '1640年，英国长期关闭的议会重新召开，民众反对封建专制的斗争爆发，成为英国资产阶级革命的开端。（易错：1640年议会重新召开是革命开始的标志！）'
+  },
+  {
+    id: 82, unit: '走向近代·欧美革命与工业革命', chapter: '第18课 英国资产阶级革命',
+    question: '为了限制国王权力，1689年英国议会通过了哪一部法律，确立了议会在国家政治生活中的最高地位？',
+    options: ['A. 1787年宪法', 'B. 《权利法案》', 'C. 《人权宣言》', 'D. 《拿破仑法典》'],
+    answer: 1,
+    explanation: '1689年《权利法案》规定国王未经议会同意不得征税、募集军队等，确立议会国家最高地位，逐步形成君主立宪制。（易错：《权利法案》在英国、是君主立宪制的基础！）'
+  },
+  {
+    id: 83, unit: '走向近代·欧美革命与工业革命', chapter: '第18课 英国资产阶级革命',
+    question: '英国资产阶级革命最终确立的政体是：',
+    options: ['A. 君主专制', 'B. 君主立宪制', 'C. 共和制', 'D. 联邦制'],
+    answer: 1,
+    explanation: '经过革命与《权利法案》，英国确立了议会对国王的制约，形成"议会至上"的君主立宪制。（易错：英国确立的是君主立宪制，保留了国王但权力受限！）'
+  },
+  {
+    id: 84, unit: '走向近代·欧美革命与工业革命', chapter: '第19课 美国独立战争',
+    question: '美国独立战争爆发的导火线与军事冲突始于1775年的：',
+    options: ['A. 来克星顿的枪声', 'B. 萨拉托加大捷', 'C. 《独立宣言》发表', 'D. 约克镇投降'],
+    answer: 0,
+    explanation: '1775年来克星顿的枪声打响了美国独立战争第一枪，成为美国独立战争爆发的标志。（易错：来克星顿的枪声是革命开始的标志！）'
+  },
+  {
+    id: 85, unit: '走向近代·欧美革命与工业革命', chapter: '第19课 美国独立战争',
+    question: '1776年7月4日，第一次人类历史上以文件形式宣布"人人生而平等"、宣告美国独立的文献是：',
+    options: ['A. 《权利法案》', 'B. 《独立宣言》', 'C. 《人权宣言》', 'D. 1787年宪法'],
+    answer: 1,
+    explanation: '1776年《独立宣言》宣布人人生而平等，宣告美国建国并主张独立，被视为美国立国基石。（易错：《独立宣言》宣告美国独立，7月4日是独立日！）'
+  },
+  {
+    id: 86, unit: '走向近代·欧美革命与工业革命', chapter: '第19课 美国独立战争',
+    question: '领导美国独立战争并成为美国首任总统的历史人物是：',
+    options: ['A. 杰斐逊', 'B. 华盛顿', 'C. 林肯', 'D. 富兰克林'],
+    answer: 1,
+    explanation: '华盛顿领导美国取得独立战争胜利，后当选为美国第一任总统，并参与制定美国宪法。（易错：华盛顿是"开国元勋"，林肯是废奴总统，别混淆！）'
+  },
+  {
+    id: 87, unit: '走向近代·欧美革命与工业革命', chapter: '第19课 美国独立战争',
+    question: '美国独立战争后，1787年宪法在美国确立了什么制度？',
+    options: ['A. 君主立宪制', 'B. 联邦制和三权分立', 'C. 君主专制', 'D. 君主制'],
+    answer: 1,
+    explanation: '1787年宪法确立了美国的联邦制，并实行立法、行政、司法三权分立，是世界上第一部成文宪法之一。（易错：1787年宪法确立"联邦制+三权分立"，是重要考点！）'
+  },
+  {
+    id: 88, unit: '走向近代·欧美革命与工业革命', chapter: '第20课 法国大革命',
+    question: '1789年7月14日，法国巴黎人民攻占王权象征、成为法国大革命开始的标志性事件是：',
+    options: ['A. 攻占巴士底狱', 'B. 处死路易十六', 'C. 热月政变', 'D. 颁布宪法'],
+    answer: 0,
+    explanation: '1789年7月14日，巴黎人民攻占巴士底狱，揭开法国大革命的序幕。（易错：7月14日是法国国庆日，纪念攻占巴士底狱！）'
+  },
+  {
+    id: 89, unit: '走向近代·欧美革命与工业革命', chapter: '第20课 法国大革命',
+    question: '法国大革命期间，1789年8月通过的、宣布"人们生来并且始终是自由平等的"人生来自由、权利平等的文件是：',
+    options: ['A. 《独立宣言》', 'B. 《人权宣言》', 'C. 《权利法案》', 'D. 《共同纲领》'],
+    answer: 1,
+    explanation: '1789年《人权宣言》宣称人生来自由平等、私有财产神圣不可侵犯，是法国大革命的纲领性文件。（易错：《人权宣言》在法国、主张自由平等！）'
+  },
+  {
+    id: 90, unit: '走向近代·欧美革命与工业革命', chapter: '第20课 法国大革命',
+    question: '法国大革命后期，拿破仑于1804年称帝并建立法兰西第一帝国，其重要的法律成果《民法典》（史称《拿破仑法典》）：',
+    options: ['A. 维护封建等级', 'B. 是第一部资本主义性质的民法典，确立了民法典的基本原则', 'C. 只适用于法国庄园', 'D. 未经形成即废止'],
+    answer: 1,
+    explanation: '《拿破仑法典》是资本主义世界第一部民法典，确立自由平等、私产神圣原则，对近代各国民事立法产生深远影响。（易错：《拿破仑法典》确立了资本主义社会财产关系的基本法则！）'
+  },
+  {
+    id: 91, unit: '走向近代·欧美革命与工业革命', chapter: '第21课 第一次工业革命',
+    question: '18世纪60年代，英国棉纺织业率先开展工业革命，其开始标志是1765年发明的人力机器：',
+    options: ['A. 珍妮纺纱机', 'B. 蒸汽机', 'C. 蒸汽机车', 'D. 轮船'],
+    answer: 0,
+    explanation: '1765年哈格里夫斯发明珍妮纺纱机，从根本上改变了纺织业依赖手工的状态，被视作英国工业革命开始的标志。（易错：工业革命开始于英国的棉纺织业，而非重工业！）'
+  },
+  {
+    id: 92, unit: '走向近代·欧美革命与工业革命', chapter: '第21课 第一次工业革命',
+    question: '第一次工业革命中，打开了"蒸汽时代"大门、提供强大动力的蒸汽机的改进者是：',
+    options: ['A. 珍妮·斯彭尔顿', 'B. 瓦特', 'C. 斯蒂芬森', 'D. 富尔顿'],
+    answer: 1,
+    explanation: '瓦特改良（并推广用）蒸汽机，解决了工业生产中的动力问题，使人类进入"蒸汽时代"。（易错：改良蒸汽机的是瓦特，别写成斯蒂芬森！）'
+  },
+  {
+    id: 93, unit: '走向近代·欧美革命与工业革命', chapter: '第21课 第一次工业革命',
+    question: '工业革命首先发生在英国的原因不包括：',
+    options: ['A. 英国资本主义制度确立较早，政局稳定', 'B. 英国掌握广阔的海外殖民地，市场需求大', 'C. 英国劳动工具发达，劳动力极为充足但资金不足', 'D. 英国紧邻大西洋，海上贸易与原料运输便利'],
+    answer: 2,
+    explanation: '英国率先工业革命得益于政治制度稳定、殖民地市场广阔、资本与劳动充足等；"资金不足"表述错误，英国恰好凭借殖民获得雄厚资本。（易错：工业革命首先在英国有两个有利条件是"市场需求大+资本充足"！）'
+  },
+  {
+    id: 94, unit: '走向近代·欧美革命与工业革命', chapter: '第21课 第一次工业革命',
+    question: '把蒸汽机驱动应用于交通工具，1825年由工程师斯蒂芬森设计、试车并正式运营的第一辆实用蒸汽机车是：',
+    options: ['A. "火箭号"', 'B. "旅行号"', 'C. "自由神号"', 'D. "奋进号"'],
+    answer: 0,
+    explanation: '1825年斯蒂芬森研制的蒸汽机车"火箭号"在铁路上试车成功，此后铁路交通迅速发展。（易错：第一次工业革命的重要成就是蒸汽机车，推动交通运输业发展！）'
+  },
+  {
+    id: 95, unit: '走向近代·欧美革命与工业革命', chapter: '第21课 第一次工业革命',
+    question: '第一次工业革命的影响，下列表述最准确的是：',
+    options: ['A. 促进了社会生产力的大发展', 'B. 使中国开始沦为半殖民地', 'C. 标志社会主义诞生', 'D. 完全消灭了贫困'],
+    answer: 0,
+    explanation: '第一次工业革命使社会生产力获得巨大发展，资本主义制度的优越性充分显露，同时带来城市化等一系列社会变化。（易错：工业革命根本影响是生产力提高与制度优势显现！）'
+  },
+  {
+    id: 96, unit: '走向近代·欧美革命与工业革命', chapter: '第22课 工业化时代的到来',
+    question: '工业革命后期，为了进一步提高生产效率，"用机器制造机器"的历史趋势是：',
+    options: ['A. 是工业革命最终完成的重要标志', 'B. 未出现', 'C. 使工人失业无益', 'D. 与农业无关'],
+    answer: 0,
+    explanation: '工业革命后期，机器制造逐渐取代手工制造，并能制造机器本身，"用机器制造机器"标志着工业革命的完成。（易错："用机器制造机器"是工业革命完成的重要标志！）'
+  },
+  {
+    id: 97, unit: '走向近代·欧美革命与工业革命', chapter: '第23课 马克思主义的诞生',
+    question: '马克思主义诞生的标志是1848年发表的：',
+    options: ['A. 《共产党宣言》', 'B. 《独立宣言》', 'C. 《人权宣言》', 'D. 《大宪章》'],
+    answer: 0,
+    explanation: '1848年马克思、恩格斯发表《共产党宣言》，宣告马克思主义（科学社会主义）诞生，为无产阶级革命提供了理论指南。（易错：《共产党宣言》于1848年发表，标志马克思主义诞生！）'
+  },
+  {
+    id: 98, unit: '走向近代·欧美革命与工业革命', chapter: '第23课 马克思主义的诞生',
+    question: '马克思主义的三个组成部分与创立的两位奠基人是：',
+    options: ['A. 马克思与恩格斯', 'B. 列宁与斯大林', 'C. 毛泽东与朱德', 'D. 洛克与孟德斯鸠'],
+    answer: 0,
+    explanation: '马克思主义由马克思、恩格斯创立，包含马克思主义哲学、政治经济学和科学社会主义三大组成部分。（易错：马克思主义创立者是马克思、恩格斯！）'
+  },
+  {
+    id: 99, unit: '走向近代·欧美革命与工业革命', chapter: '第16课 早期殖民掠夺',
+    question: '西班牙、葡萄牙等殖民者是世界上最早进行殖民活动的国家，为其掠夺欧洲资本原始积累的手段包括：',
+    options: ['A. 依靠奴隶贸易与掠夺金银', 'B. 完全依靠和平贸易', 'C. 依靠天主教布道', 'D. 依靠文化交流'],
+    answer: 0,
+    explanation: '早期殖民者通过掠夺美洲金银、贩卖黑奴、建立殖民地等方式进行资本原始积累，加剧了非洲和拉丁美洲的苦难。（易错：资本原始积累充满残酷掠夺与血腥，评价殖民扩张要关注其双重影响！）'
+  },
+  {
+    id: 100, unit: '走向近代·欧美革命与工业革命', chapter: '第22课 工业化时代的到来',
+    question: '工业革命中出现的"蒸汽轮船"的发明者是美国工程师，此人于1807年制成实用轮船，他是：',
+    options: ['A. 富尔顿', 'B. 瓦特', 'C. 斯蒂芬森', 'D. 富兰克林'],
+    answer: 0,
+    explanation: '1807年美国人富尔顿造出实用汽船（蒸汽轮船），用于内河航运，说明蒸汽动力在交通工具上广泛应用。（易错：发明轮船的是美国人富尔顿！）'
+  }
+];
+</script>
+  <script>
+/* 九年级历史知识 PK 对战 —— 主逻辑（独立作答版：两位玩家各自独立抽题、各自判题、各自推进） */
+(function () {
+  'use strict';
+
+  var SCORE_PER_Q = 10;
+  var COUNT_OPTIONS = [10, 12, 15, 20];
+  var LETTERS = ['A', 'B', 'C', 'D'];
+
+  // 玩家颜色：0 = A(橙) 1 = B(蓝)
+  var P_COLOR = { 0: 'var(--primary)', 1: 'var(--blue)' };
+
+  // ---------------- 状态 ----------------
+  // players[p] = { name, score, correct, questions[], cur, answered, done, answers[] }
+  var game = {
+    names: ['A同学', 'B同学'],
+    count: 10,
+    selectedUnits: [],
+    players: [null, null]
+  };
+
+  // ---------------- DOM 工具 ----------------
+  function $(id) { return document.getElementById(id); }
+  function show(id) { $(id).classList.remove('hidden'); }
+  function hide(id) { $(id).classList.add('hidden'); }
+
+  // ---------------- 单元信息 ----------------
+  function getUnits() {
+    var map = {};
+    window.QUESTION_BANK.forEach(function (q) {
+      if (!map[q.unit]) map[q.unit] = 0;
+      map[q.unit]++;
+    });
+    return Object.keys(map).map(function (u) { return { name: u, count: map[u] }; });
+  }
+
+  // ---------------- 设置页 ----------------
+  function renderCountOptions() {
+    var box = $('count-options');
+    box.innerHTML = '';
+    COUNT_OPTIONS.forEach(function (n) {
+      var el = document.createElement('div');
+      el.className = 'seg-chip' + (n === game.count ? ' active' : '');
+      el.textContent = n + ' 题';
+      el.dataset.n = n;
+      el.addEventListener('click', function () {
+        game.count = n;
+        Array.prototype.forEach.call(box.children, function (c) {
+          c.classList.toggle('active', Number(c.dataset.n) === n);
+        });
+      });
+      box.appendChild(el);
+    });
+  }
+
+  function renderUnits() {
+    var units = getUnits();
+    var box = $('unit-options');
+    box.innerHTML = '';
+    units.forEach(function (u) {
+      var el = document.createElement('div');
+      el.className = 'unit-chip active';
+      el.innerHTML =
+        '<div class="u-name"><span class="u-check">✔</span><span class="u-text"></span>' +
+        '<span class="u-count"></span></div>';
+      el.querySelector('.u-text').textContent = u.name;
+      el.querySelector('.u-count').textContent = u.count + '题';
+      el.dataset.unit = u.name;
+      el.addEventListener('click', function () {
+        el.classList.toggle('active');
+        syncAllToggle();
+        updateBankInfo();
+      });
+      box.appendChild(el);
+    });
+    game.selectedUnits = units.map(function (u) { return u.name; });
+    syncAllToggle();
+    updateBankInfo();
+  }
+
+  function syncAllToggle() {
+    var chips = $('unit-options').children;
+    var allActive = Array.prototype.every.call(chips, function (c) { return c.classList.contains('active'); });
+    $('toggle-all-text').textContent = allActive ? '✅ 取消全选' : '✔ 全选所有单元';
+  }
+
+  function currentSelectedUnits() {
+    var chips = $('unit-options').children;
+    var out = [];
+    Array.prototype.forEach.call(chips, function (c) { if (c.classList.contains('active')) out.push(c.dataset.unit); });
+    return out;
+  }
+
+  function updateBankInfo() {
+    var sel = currentSelectedUnits();
+    var total = 0;
+    window.QUESTION_BANK.forEach(function (q) { if (sel.indexOf(q.unit) >= 0) total++; });
+    var n = Math.min(game.count, total);
+    var warn = total < game.count ? '（所选单元题量不足，本局每人实际出题 ' + n + ' 题）' : '';
+    $('bank-info').textContent = '已选 ' + sel.length + ' 个单元，可抽题 ' + total + ' 道 → 每位玩家将各自抽取 ' + n + ' 题（互不相同）。' + warn;
+  }
+
+  function renderBankList() {
+    $('bank-count').textContent = window.QUESTION_BANK.length;
+    var box = $('bank-list');
+    box.innerHTML = '';
+    window.QUESTION_BANK.forEach(function (q) {
+      var el = document.createElement('div');
+      el.className = 'bank-item';
+      el.innerHTML = '<div class="u"></div><div class="t"></div>';
+      el.querySelector('.u').textContent = q.unit + ' · ' + q.chapter;
+      el.querySelector('.t').textContent = q.id + '. ' + q.question;
+      box.appendChild(el);
+    });
+  }
+
+  var bankOpen = false;
+  function toggleBank() {
+    bankOpen = !bankOpen;
+    $('bank-panel').classList.toggle('hidden', !bankOpen);
+    $('btn-bank').textContent = bankOpen ? '收起题库与说明 ▴' : '查看题库与说明 ▾';
+  }
+
+  // ---------------- 抽题（各自独立洗牌取 N 题） ----------------
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function pickQuestions() {
+    var sel = currentSelectedUnits();
+    var bank = window.QUESTION_BANK.filter(function (q) { return sel.indexOf(q.unit) >= 0; });
+    var n = Math.min(game.count, bank.length);
+    return shuffle(bank).slice(0, n);
+  }
+
+  // ---------------- 对战 ----------------
+  function startGame() {
+    game.names = [$('nameA').value.trim() || 'A同学', $('nameB').value.trim() || 'B同学'];
+    game.selectedUnits = currentSelectedUnits();
+    if (game.selectedUnits.length === 0) {
+      alert('请至少勾选一个单元范围！');
+      return;
+    }
+    initPlayers();
+
+    hide('view-setup');
+    show('view-battle');
+    bindNameBar();
+
+    // 每个玩家独立渲染第 1 题
+    for (var p = 0; p < 2; p++) renderQuestion(p);
+  }
+
+  function initPlayers() {
+    game.players = [0, 1].map(function (p) {
+      return {
+        name: game.names[p],
+        score: 0,
+        correct: 0,
+        questions: pickQuestions(),   // 各自单独洗牌抽题
+        cur: 0,
+        answered: false,
+        done: false,
+        answers: []
+      };
+    });
+  }
+
+  function bindNameBar() {
+    $('cdNameA').textContent = game.players[0].name;
+    $('cdNameB').textContent = game.players[1].name;
+    $('cdNameB').classList.add('b');
+  }
+
+  function currentQ(p) { return game.players[p].questions[game.players[p].cur]; }
+
+  function updateStat(p) {
+    var info = game.players[p];
+    $('score-' + p).textContent = info.score;
+    $('correct-' + p).textContent = info.correct;
+  }
+
+  function updateProgress(p) {
+    var info = game.players[p];
+    var total = info.questions.length;
+    var n = info.cur + 1;
+    if (info.done) n = total;
+    $('prog-' + p).textContent = '第 ' + n + ' / ' + total + ' 题';
+    $('bar-' + p).style.width = (info.done ? total : info.cur) / total * 100 + '%';
+  }
+
+  function updateNextButton(p) {
+    var info = game.players[p];
+    var btn = $('next-' + p);
+    var doneLabel = $('done-' + p);
+    if (info.done) {
+      btn.disabled = true;
+      doneLabel.classList.remove('hidden');
+    } else if (info.answered) {
+      btn.disabled = false;
+      doneLabel.classList.add('hidden');
+    } else {
+      btn.disabled = true;
+      doneLabel.classList.add('hidden');
+    }
+  }
+
+  // 渲染某位玩家的当前题
+  function renderQuestion(p) {
+    var pl = game.players[p];
+    var q = currentQ(p);
+    pl.answered = false;
+
+    $('question-' + p).textContent = q.question;
+    var box = $('options-' + p);
+    box.innerHTML = '';
+    q.options.forEach(function (opt, i) {
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'opt';
+      el.innerHTML = '<span class="key"></span><span class="text"></span>';
+      el.querySelector('.key').textContent = LETTERS[i];
+      el.querySelector('.text').textContent = opt.replace(/^[A-D]\.\s*/, '');
+      el.addEventListener('click', function () { onAnswer(p, i); });
+      box.appendChild(el);
+    });
+    var ab = $('answer-' + p);
+    ab.className = 'answer-box';
+    ab.innerHTML = '';
+
+    updateStat(p);
+    updateProgress(p);
+    updateNextButton(p);
+  }
+
+  // ---------------- 作答与判题 ----------------
+  function onAnswer(p, i) {
+    var pl = game.players[p];
+    if (pl.answered || pl.done) return;
+    pl.answered = true;
+
+    var q = currentQ(p);
+    var correct = (i === q.answer);
+    pl.answers.push({
+      unit: q.unit,
+      chapter: q.chapter,
+      question: q.question,
+      chosen: i,
+      correct: correct
+    });
+    if (correct) {
+      pl.score += SCORE_PER_Q;
+      pl.correct++;
+    }
+
+    // 高亮所选并锁定
+    var opts = $('options-' + p).children;
+    Array.prototype.forEach.call(opts, function (o) { o.classList.add('locked'); });
+    opts[i].classList.add('selected');
+    // 标出正确 / 错误
+    opts[q.answer].classList.add('correct');
+    if (i !== q.answer) opts[i].classList.add('wrong');
+
+    // 解析框
+    var ab = $('answer-' + p);
+    ab.className = 'answer-box show';
+    var resLine = correct
+      ? '<span class="res-line ok">✓ 回答正确 · +' + SCORE_PER_Q + ' 分</span>'
+      : '<span class="res-line no">✗ 回答错误 · 0 分</span>';
+    ab.innerHTML =
+      resLine +
+      '<div>正确答案：<b>' + LETTERS[q.answer] + '</b></div>' +
+      '<div class="src">出处：' + q.unit + ' · ' + q.chapter + '</div>' +
+      '<div class="expl">' + q.explanation + '</div>';
+
+    updateStat(p);
+    updateProgress(p);
+    updateNextButton(p);
+  }
+
+  // 某位玩家的“下一题”
+  function nextPlayer(p) {
+    var pl = game.players[p];
+    if (!pl.answered || pl.done) return;
+    if (pl.cur < pl.questions.length - 1) {
+      pl.cur++;
+      renderQuestion(p);
+    } else {
+      pl.done = true;
+      updateProgress(p);
+      updateNextButton(p);
+    }
+    if (game.players[0].done && game.players[1].done) finishGame();
+  }
+
+  function abortGame() {
+    if (confirm('确定要退出本局对战吗？')) {
+      show('view-setup');
+      hide('view-battle');
+      hide('view-result');
+    }
+  }
+
+  // ---------------- 结算页 ----------------
+  function finishGame() {
+    hide('view-battle');
+    show('view-result');
+
+    var a = game.players[0], b = game.players[1];
+    // 标题
+    var title = $('result-title');
+    if (a.score > b.score) title.innerHTML = '🏆 恭喜 <span class="winner">' + a.name + '</span> 获胜！';
+    else if (b.score > a.score) title.innerHTML = '🏆 恭喜 <span class="winner">' + b.name + '</span> 获胜！';
+    else title.innerHTML = '<span class="draw">🤝 旗鼓相当，本局平局！</span>';
+
+    renderSummary(a, b);
+    renderChart();
+    renderKnowledge();
+    renderDetail();
+  }
+
+  function renderSummary(a, b) {
+    var box = $('summary');
+    box.innerHTML = '';
+    [a, b].forEach(function (info, idx) {
+      var n = info.questions.length;
+      var rate = n ? Math.round(info.correct / n * 100) : 0;
+      var card = document.createElement('div');
+      card.className = 'sum-card ' + (idx === 0 ? 'pa' : 'pb');
+      card.innerHTML =
+        '<div class="sum-name">' + info.name + '</div>' +
+        '<div class="big-num">' + info.score + '</div>' +
+        '<div class="sum-label">总得分（满分 ' + (n * SCORE_PER_Q) + '）</div>' +
+        '<div class="rate-row">' +
+        '<div class="r"><b>' + info.correct + '</b><div class="sum-label">答对数</div></div>' +
+        '<div class="r"><b>' + rate + '%</b><div class="sum-label">正确率</div></div>' +
+        '</div>';
+      box.appendChild(card);
+    });
+  }
+
+  // 每位玩家按自己的 N 题累计绘制
+  function renderChart() {
+    var a = game.players[0], b = game.players[1];
+    var n = Math.max(a.questions.length, b.questions.length);
+    var maxY = n * SCORE_PER_Q;
+
+    var W = 600, H = 260;
+    var padL = 40, padR = 16, padT = 18, padB = 28;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+
+    function px(i) { return padL + (plotW * i / n); }
+    function py(v) { return padT + plotH * (1 - v / maxY); }
+
+    // 生成某位玩家按自己题序的累计得分序列
+    function polyFor(answers) {
+      var xs = [], ys = [], s = 0;
+      for (var i = 0; i <= n; i++) {
+        if (i > 0 && i - 1 < answers.length && answers[i - 1].correct) s += SCORE_PER_Q;
+        xs.push(i);
+        ys.push(py(s));
+      }
+      return { xs: xs, ys: ys };
+    }
+
+    var svg = $('chart');
+    var parts = [];
+    // 网格横线
+    for (var g = 0; g <= 4; g++) {
+      var gy = padT + plotH * g / 4;
+      var val = Math.round(maxY * (1 - g / 4));
+      parts.push('<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="#e6e6ec"/>');
+      parts.push('<text x="' + (padL - 6) + '" y="' + (gy + 4) + '" font-size="11" fill="#9a9aa6" text-anchor="end">' + val + '</text>');
+    }
+    parts.push('<text x="' + padL + '" y="' + (H - 8) + '" font-size="11" fill="#9a9aa6">题序</text>');
+
+    function poly(xs, ys) {
+      return xs.map(function (x, i) { return (i ? ' L' : 'M') + px(x).toFixed(1) + ' ' + ys[i].toFixed(1); }).join('');
+    }
+    var lineA = polyFor(a.answers), lineB = polyFor(b.answers);
+    parts.push('<polyline points="' + poly(lineA.xs, lineA.ys) + '" fill="none" stroke="' + P_COLOR[0] + '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>');
+    parts.push('<polyline points="' + poly(lineB.xs, lineB.ys) + '" fill="none" stroke="' + P_COLOR[1] + '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>');
+
+    function dots(line, color) {
+      line.xs.forEach(function (x, i) {
+        var idx = Math.round(x);
+        if (i === 0 || idx === n || idx % 5 === 0) {
+          parts.push('<circle cx="' + px(x).toFixed(1) + '" cy="' + line.ys[i].toFixed(1) + '" r="3.5" fill="#fff" stroke="' + color + '" stroke-width="2.5"/>');
+        }
+      });
+    }
+    dots(lineA, P_COLOR[0]);
+    dots(lineB, P_COLOR[1]);
+
+    svg.innerHTML = parts.join('');
+
+    $('chart-legend').innerHTML =
+      '<span><i class="dot a"></i>' + a.name + '（' + a.score + '分）</span>' +
+      '<span><i class="dot b"></i>' + b.name + '（' + b.score + '分）</span>';
+  }
+
+  // 知识点分析：按每位玩家自己的答案统计
+  function renderKnowledge() {
+    var a = game.players[0], b = game.players[1];
+    var units = {};
+    window.QUESTION_BANK.forEach(function (q) { if (!units[q.unit]) units[q.unit] = 0; });
+    Object.keys(units).forEach(function (u) { units[u] = { a: 0, aT: 0, b: 0, bT: 0 }; });
+
+    [a, b].forEach(function (info, idx) {
+      info.answers.forEach(function (r) {
+        if (!units[r.unit]) units[r.unit] = { a: 0, aT: 0, b: 0, bT: 0 };
+        if (idx === 0) { units[r.unit].aT++; if (r.correct) units[r.unit].a++; }
+        else { units[r.unit].bT++; if (r.correct) units[r.unit].b++; }
+      });
+    });
+
+    // 本局涉及单元数（合并两位玩家各自的题目）
+    var countThisGame = {};
+    [a, b].forEach(function (info) {
+      info.questions.forEach(function (q) { countThisGame[q.unit] = (countThisGame[q.unit] || 0) + 1; });
+    });
+
+    var box = $('knowledge');
+    box.innerHTML = '';
+    Object.keys(units).forEach(function (u) {
+      var st = units[u];
+      if (!countThisGame[u]) return; // 只显示本局涉及的单元
+      var aRate = st.aT ? Math.round(st.a / st.aT * 100) : 0;
+      var bRate = st.bT ? Math.round(st.b / st.bT * 100) : 0;
+      var weak = Math.min(aRate, bRate) < 50;
+      var row = document.createElement('div');
+      row.className = 'unit-row' + (weak ? ' weak' : '');
+      row.innerHTML =
+        '<div class="u-name">' + u + ' <span class="sum-label">（' + countThisGame[u] + '题）</span>' +
+        (weak ? '<span class="weak-tag">⚠ 建议复习</span>' : '') + '</div>' +
+        '<div class="sum-label">A ' + aRate + '% · B ' + bRate + '%</div>' +
+        '<div class="k-bar"><i class="a" style="width:' + aRate + '%"></i><i class="b" style="width:' + bRate + '%"></i></div>';
+      box.appendChild(row);
+    });
+    if (!box.children.length) box.innerHTML = '<div class="tip">暂无本局单元数据。</div>';
+  }
+
+  // 逐题明细：按玩家分别列出
+  function renderDetail() {
+    var a = game.players[0], b = game.players[1];
+    var wrap = $('detail');
+    wrap.innerHTML = '';
+    [a, b].forEach(function (info, idx) {
+      var sec = document.createElement('div');
+      sec.className = 'detail-player';
+      var name = document.createElement('div');
+      name.className = 'detail-name ' + (idx === 0 ? 'a' : 'b');
+      name.textContent = info.name + '（答对 ' + info.correct + ' / ' + info.questions.length + ' 题）';
+      sec.appendChild(name);
+
+      var tableWrap = document.createElement('div');
+      tableWrap.className = 'table-wrap';
+      var table = document.createElement('table');
+      table.className = 'detail-table';
+      table.innerHTML = '<thead><tr><th>题号</th><th>题干</th><th>所选</th><th>正误</th><th>单元 / 课节</th><th>答案</th></tr></thead>';
+      var tb = document.createElement('tbody');
+      info.answers.forEach(function (r, i) {
+        var q = info.questions[i];
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + (i + 1) + '</td>' +
+          '<td>' + r.question + '</td>' +
+          '<td>' + LETTERS[r.chosen] + '</td>' +
+          '<td>' + (r.correct ? '<span class="res-ok">对</span>' : '<span class="res-no">错</span>') + '</td>' +
+          '<td>' + r.unit + '<br><span class="sum-label">' + r.chapter + '</span></td>' +
+          '<td>' + (q ? LETTERS[q.answer] : '—') + '</td>';
+        tb.appendChild(tr);
+      });
+      table.appendChild(tb);
+      tableWrap.appendChild(table);
+      sec.appendChild(tableWrap);
+      wrap.appendChild(sec);
+    });
+  }
+
+  // ---------------- 事件绑定 ----------------
+  function bindEvents() {
+    $('btn-start').addEventListener('click', startGame);
+    $('next-0').addEventListener('click', function () { nextPlayer(0); });
+    $('next-1').addEventListener('click', function () { nextPlayer(1); });
+    $('btn-abort').addEventListener('click', abortGame);
+    $('btn-again').addEventListener('click', function () { startGame(); });
+    $('btn-reset').addEventListener('click', function () { show('view-setup'); hide('view-battle'); hide('view-result'); });
+    $('btn-bank').addEventListener('click', toggleBank);
+    $('toggle-all-units').addEventListener('click', function () {
+      var chips = $('unit-options').children;
+      var allActive = Array.prototype.every.call(chips, function (c) { return c.classList.contains('active'); });
+      Array.prototype.forEach.call(chips, function (c) { c.classList.toggle('active', !allActive); });
+      syncAllToggle();
+      updateBankInfo();
+    });
+    ['nameA', 'nameB'].forEach(function (id) {
+      $(id).addEventListener('input', function () {
+        if (!$(id).value.trim()) $(id).placeholder = id === 'nameA' ? 'A同学' : 'B同学';
+      });
+    });
+    // 键盘快捷键：A侧 1/2/3/4 选题，B侧 7/8/9/0 选题（无回车联动）
+    document.addEventListener('keydown', function (e) {
+      if ($('view-battle').classList.contains('hidden')) return;
+      var mapA = { '1': 0, '2': 1, '3': 2, '4': 3 };
+      var mapB = { '7': 0, '8': 1, '9': 2, '0': 3 };
+      if (e.key in mapA) onAnswer(0, mapA[e.key]);
+      else if (e.key in mapB) onAnswer(1, mapB[e.key]);
+    });
+  }
+
+  // ---------------- 初始化 ----------------
+  document.addEventListener('DOMContentLoaded', function () {
+    renderCountOptions();
+    renderUnits();
+    renderBankList();
+    updateBankInfo();
+    bindEvents();
+  });
+})();
+</script>
+</body>
+</html>
